@@ -5,10 +5,10 @@ exports.handler = async (event) => {
     const endpoint = event.path;2
     switch (endpoint) {
         case '/create-message':
-            return createMessage(event);
+            return await createMessage(event);
         case '/my-messages':
-            return myMessages(event);
+            return await myMessages(event);
         default:
-            return allMessages(event);
+            return await allMessages(event);
     }
 }
