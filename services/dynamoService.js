@@ -1,7 +1,7 @@
 import { config, dynamoClient } from "../config/dynamoConfig.js";
 import { v4 } from "uuid";
 
-export class DynamoDBService {
+export default class DynamoDBService {
     static async createMessage(message, secretKey){
         const params = {
             TableName: config.tableName,

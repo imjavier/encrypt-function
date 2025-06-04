@@ -1,7 +1,6 @@
-import { enc } from 'crypto-js';
 import { createMessage, myMessages, allMessages } from './controllers.js';
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
     const endpoint = event.path;2
     switch (endpoint) {
         case '/create-message':
