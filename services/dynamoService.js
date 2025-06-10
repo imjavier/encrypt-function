@@ -1,54 +1,67 @@
 import { config, dynamoClient } from "../config/dynamoConfig.js";
+import { ScanCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { v4 } from "uuid";
 
 export default class DynamoDBService {
-    static async createMessage(message, secretKey){
+    static async createMessage(message, secretKey) {
         const params = {
             TableName: config.tableName,
             Item: {
                 id: v4(),
                 message: message,
                 secretKey: secretKey,
+                createdAt: new Date().toISOString()
             }
-        }
+        };
+        
         try {
-            await dynamoClient.put(params).promise();
+            const command = new PutCommand(params);
+            await dynamoClient.send(command);
             return true;
         } catch (error) {
             console.error("Error creating message:", error);
-            return false
+            return false;
         }
     }
+
     static async getMyMessages(secretKey) {
         const params = {
             TableName: config.tableName,
+            IndexName: 'secretKey-index',
             KeyConditionExpression: 'secretKey = :sk',
             ExpressionAttributeValues: {
                 ':sk': secretKey
-            }
+            },
         };
 
-        try{
-            const result = await dynamoClient.query(params).promise();
-            return result.Items || [];
-        }catch{
+        try {
+            const command = new QueryCommand(params);
+            const result = await dynamoClient.send(command);
+           
+            return await result.Items;
+        } catch (error) {
             console.error("Error fetching messages:", error);
+
             return [];
         }
     }
 
     static async getAllMessages() {
-         const params = {
-            TableName: config.tableName
+        const params = {
+            TableName: config.tableName,
+            ProjectionExpression: "message, createdAt"
         };
-
+        
         try {
-            const result = await dynamoClient.scan(params).promise();
-            return result.Items || [];
+            const command = new ScanCommand(params);
+            const result = await dynamoClient.send(command);
+            const data = await result.Items;
+            console.log(data);
+            return await result.Items;
         } catch (error) {
             console.error("Error obteniendo todos los mensajes:", error);
-            return [];
+
+            throw error;
         }
     }
 }
-

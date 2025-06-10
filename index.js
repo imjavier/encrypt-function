@@ -1,13 +1,15 @@
 import { createMessage, myMessages, allMessages } from './controllers.js';
 
 export const handler = async (event) => {
-    const endpoint = event.path;2
-    switch (endpoint) {
-        case '/create-message':
+    const path = event.requestContext?.http?.path || event.path;
+    const method = event.requestContext?.http?.method || event.httpMethod;
+
+    switch (`${method} ${path}`) {
+        case 'POST /create-message':
             return await createMessage(event);
-        case '/my-messages':
+        case 'GET /my-messages':
             return await myMessages(event);
-        default:
+        case 'GET /all':
             return await allMessages(event);
     }
 }
