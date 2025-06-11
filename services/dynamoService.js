@@ -49,7 +49,7 @@ export default class DynamoDBService {
     static async getAllMessages() {
         const params = {
             TableName: config.tableName,
-            ProjectionExpression: "message"
+            ProjectionExpression: "message, createdAt"
         };
         
         try {
