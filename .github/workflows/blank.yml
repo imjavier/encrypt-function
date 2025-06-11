@@ -13,7 +13,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  deploy-lambda:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -21,7 +21,25 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Install dependencies
+        env:
+          CI: true
+        run: |
+          npm ci
+      - name: Deploy to Lambda
+        run: |
+          zip -j deploy.zip ./*
+          aws lambda update-function-code --function-name=${{secrets.LAMBDA_FUNCTION_NAME}} --zip-file fileb://deploy.zip
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
