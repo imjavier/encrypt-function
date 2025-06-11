@@ -56,11 +56,10 @@ export default class DynamoDBService {
             const command = new ScanCommand(params);
             const result = await dynamoClient.send(command);
             const data = await result.Items;
-            console.log(data);
+
             return await result.Items;
         } catch (error) {
-            console.error("Error obteniendo todos los mensajes:", error);
-
+            console.error("Error fetching all messages :", error);
             throw error;
         }
     }

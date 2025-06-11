@@ -4,7 +4,7 @@ import DynamoDBService from './services/dynamoService.js';
 
 export const createMessage = async (event) => {
     const { message, secretKey } = JSON.parse(event.body);
-    console.log(message, secretKey, '  BODY');
+
     if (!message || !secretKey)
         return getErrorResponse('Message and secret key are required', 400);
 
@@ -22,7 +22,7 @@ export const createMessage = async (event) => {
 
 export const myMessages = async (event) => {
     const secretKey = event.headers['x-secret-key'] || null;
-    console.log('ESTA ES LA LLAVE SECRETA ', secretKey.toString('utf8'))
+
     if (!secretKey)
         return getErrorResponse('Secret key is required', 400);
 
