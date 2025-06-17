@@ -13,7 +13,7 @@ export default class DynamoDBService {
                 createdAt: new Date().toISOString()
             }
         };
-        
+        console.log('HOLA MUNDI DESDE GITHUB ACTIONS')
         try {
             const command = new PutCommand(params);
             await dynamoClient.send(command);
